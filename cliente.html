@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delicias punto G - Pedido</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:Arial;background:#fff8f0;min-height:100vh;}
+        header{background:linear-gradient(135deg,#ff6b00,#ff9500);padding:20px;text-align:center;color:white;}
+        header h1{font-size:22px;}
+        header p{font-size:13px;opacity:0.9;}
+        .content{padding:20px;max-width:500px;margin:0 auto;}
+        .section-title{font-size:16px;font-weight:700;color:#ff6b00;margin:20px 0 10px;}
+        .producto{background:white;border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid transparent;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+        .producto.selected{border-color:#ff6b00;background:#fff5ee;}
+        .producto-header{display:flex;justify-content:space-between;align-items:center;}
+        .producto-nombre{font-size:15px;font-weight:500;color:#333;}
+        .producto-precio{font-size:16px;font-weight:700;color:#ff6b00;}
+        .producto-desc{font-size:12px;color:#888;margin-top:4px;}
+        .opciones{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+        .opcion{flex:1;min-width:80px;border:2px solid #ddd;border-radius:8px;padding:10px;text-align:center;cursor:pointer;font-size:13px;color:#666;}
+        .opcion.selected{border-color:#ff6b00;background:#fff5ee;color:#ff6b00;font-weight:500;}
+        .btn-pedir{width:100%;background:#ff6b00;color:white;border:none;border-radius:30px;padding:15px;font-size:16px;font-weight:500;cursor:pointer;margin-top:20px;}
+        .total-box{background:white;border-radius:12px;padding:16px;margin-top:16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+        .total-row{display:flex;justify-content:space-between;font-size:14px;color:#333;margin-bottom:6px;}
+        .total-final{display:flex;justify-content:space-between;font-size:18px;font-weight:700;color:#ff6b00;border-top:1px solid #ddd;padding-top:10px;margin-top:6px;}
+        .estado-pedido{background:white;border-radius:12px;padding:20px;text-align:center;margin-top:16px;display:none;}
+        .estado-pedido h3{color:#ff6b00;margin-bottom:8px;}
+        .estado-badge{display:inline-block;padding:8px 20px;border-radius:20px;font-size:14px;font-weight:500;}
+        .estado-esperando{background:#fff3cd;color:#856404;}
+        .estado-listo{background:#d4edda;color:#155724;}
+        .logout{text-align:center;margin-top:20px;}
+        .logout a{color:#ff6b00;font-size:13px;cursor:pointer;}
+    </style>
+</head>
+<body>
+<header>
+    <h1>🍗 Delicias punto G</h1>
+    <p id="bienvenida">Bienvenido</p>
+</header>
+
+<div class="content">
+    <div id="seccion-pedido">
+        <p class="section-title">🍗 Elige tu pieza</p>
+        <div class="producto" id="prod-pechuga-p" onclick="seleccionarProducto('Pechuga pequeña', 3500, 'pechuga-p')">
+            <div class="producto-header"><span class="producto-nombre">🍗 Pechuga pequeña</span><span class="producto-precio">$3.500</span></div>
+        </div>
+        <div class="producto" id="prod-pechuga-m" onclick="seleccionarProducto('Pechuga mediana', 4000, 'pechuga-m')">
+            <div class="producto-header"><span class="producto-nombre">🍗 Pechuga mediana</span><span class="producto-precio">$4.000</span></div>
+        </div>
+        <div class="producto" id="prod-pechuga-g" onclick="seleccionarProducto('Pechuga grande', 5000, 'pechuga-g')">
+            <div class="producto-header"><span class="producto-nombre">🍗 Pechuga grande</span><span class="producto-precio">$5.000</span></div>
+        </div>
+        <div class="producto" id="prod-muslo-p" onclick="seleccionarProducto('Muslo pequeño', 3500, 'muslo-p')">
+            <div class="producto-header"><span class="producto-nombre">🍗 Muslo pequeño</span><span class="producto-precio">$3.500</span></div>
+        </div>
+        <div class="producto" id="prod-muslo-m" onclick="seleccionarProducto('Muslo mediano', 4000, 'muslo-m')">
+            <div class="producto-header"><span class="producto-nombre">🍗 Muslo mediano</span><span class="producto-precio">$4.000</span></div>
+        </div>
+        <div class="producto" id="prod-muslo-g" onclick="seleccionarProducto('Muslo grande', 5000, 'muslo-g')">
+            <div class="producto-header"><span class="producto-nombre">🍗 Muslo grande</span><span class="producto-precio">$5.000</span></div>
+        </div>
+        <div class="producto" id="prod-contra-p" onclick="seleccionarProducto('Contra muslo pequeño', 3500, 'contra-p')">
+            <div class="producto-header"><span class="producto-nombre">🍗 Contra muslo pequeño</span><span class="producto-precio">$3.500</span></div>
+        </div>
+        <div class="producto" id="prod-contra-m" onclick="seleccionarProducto('Contra muslo mediano', 4000, 'contra-m')">
+            <div class="producto-header"><span class="producto-nombre">🍗 Contra muslo mediano</span><span class="producto-precio">$4.000</span></div>
+        </div>
+        <div class="producto" id="prod-contra-g" onclick="seleccionarProducto('Contra muslo grande', 5000, 'contra-g')">
+            <div class="producto-header"><span class="producto-nombre">🍗 Contra muslo grande</span><span class="producto-precio">$5.000</span></div>
+        </div>
+
+        <p class="section-title">🌽 ¿Con bollo?</p>
+        <div class="opciones">
+            <div class="opcion" id="bollo-si" onclick="seleccionarBollo(true)">✅ Con bollo<br><small>+$500</small></div>
+            <div class="opcion" id="bollo-no" onclick="seleccionarBollo(false)">❌ Sin bollo</div>
+        </div>
+
+        <p class="section-title">🥫 ¿Con salsa?</p>
+        <div class="opciones">
+            <div class="opcion" id="salsa-si" onclick="seleccionarSalsa(true)">✅ Con salsa</div>
+            <div class="opcion" id="salsa-no" onclick="seleccionarSalsa(false)">❌ Sin salsa</div>
+        </div>
+
+        <p class="section-title">🪑 ¿Para comer aquí o para llevar?</p>
+        <div class="opciones">
+            <div class="opcion" id="tipo-aqui" onclick="seleccionarTipo('aqui')">🪑 Para comer aquí</div>
+            <div class="opcion" id="tipo-llevar" onclick="seleccionarTipo('llevar')">🥡 Para llevar</div>
+        </div>
+
+        <div class="total-box" id="total-box" style="display:none;">
+            <div class="total-row"><span id="total-producto-txt"></span><span id="total-producto-val"></span></div>
+            <div class="total-row" id="total-bollo-row" style="display:none;"><span>Bollo</span><span>+$500</span></div>
+            <div class="total-final"><span>Total</span><span id="total-final-val"></span></div>
+        </div>
+
+        <button class="btn-pedir" onclick="hacerPedido()">🍗 Hacer pedido</button>
+    </div>
+
+    <div class="estado-pedido" id="estado-pedido">
+        <h3>¡Pedido recibido! 🎉</h3>
+        <p style="color:#666;font-size:14px;margin-bottom:12px;">Tu pedido está siendo preparado</p>
+        <span class="estado-badge estado-esperando" id="estado-badge">⏳ Preparando tu pedido...</span>
+        <p style="color:#888;font-size:12px;margin-top:12px;">Te avisaremos por WhatsApp cuando esté listo</p>
+        <button style="margin-top:16px;background:#ff6b00;color:white;border:none;border-radius:20px;padding:10px 20px;cursor:pointer;" onclick="nuevoPedido()">Hacer otro pedido</button>
+    </div>
+
+    <div class="logout">
+        <a onclick="cerrarSesion()">Cerrar sesión</a>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, set, onValue, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDw1-z0-gRK2VD5vBzRF9t1Rm1Nav2GcSw",
+        authDomain: "delicias-punto-g.firebaseapp.com",
+        databaseURL: "https://delicias-punto-g-default-rtdb.firebaseio.com",
+        projectId: "delicias-punto-g",
+        storageBucket: "delicias-punto-g.appspot.com",
+        messagingSenderId: "TU_SENDER_ID",
+        appId: "TU_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    var productoSeleccionado = null;
+    var precioProducto = 0;
+    var conBollo = null;
+    var conSalsa = null;
+    var tipoConsumo = null;
+    var usuarioActual = null;
+    var pedidoActualId = null;
+
+    onAuthStateChanged(auth, (user) => {
+        if(!user) { window.location.href = 'index.html'; return; }
+        usuarioActual = user;
+        onValue(ref(db, 'usuarios/' + user.uid), (snap) => {
+            const data = snap.val();
+            if(data) document.getElementById('bienvenida').textContent = '¡Hola ' + data.nombre + '!';
+        });
+    });
+
+    window.seleccionarProducto = function(nombre, precio, id) {
+        document.querySelectorAll('.producto').forEach(p => p.classList.remove('selected'));
+        document.getElementById('prod-' + id).classList.add('selected');
+        productoSeleccionado = nombre;
+        precioProducto = precio;
+        actualizarTotal();
+    }
+
+    window.seleccionarBollo = function(val) {
+        conBollo = val;
+        document.getElementById('bollo-si').classList.toggle('selected', val);
+        document.getElementById('bollo-no').classList.toggle('selected', !val);
+        actualizarTotal();
+    }
+
+    window.seleccionarSalsa = function(val) {
+        conSalsa = val;
+        document.getElementById('salsa-si').classList.toggle('selected', val);
+        document.getElementById('salsa-no').classList.toggle('selected', !val);
+    }
+
+    window.seleccionarTipo = function(tipo) {
+        tipoConsumo = tipo;
+        document.getElementById('tipo-aqui').classList.toggle('selected', tipo === 'aqui');
+        document.getElementById('tipo-llevar').classList.toggle('selected', tipo === 'llevar');
+    }
+
+    function actualizarTotal() {
+        if(!productoSeleccionado) return;
+        var total = precioProducto + (conBollo ? 500 : 0);
+        document.getElementById('total-producto-txt').textContent = productoSeleccionado;
+        document.getElementById('total-producto-val').textContent = '$' + precioProducto.toLocaleString('es-CO');
+        document.getElementById('total-bollo-row').style.display = conBollo ? 'flex' : 'none';
+        document.getElementById('total-final-val').textContent = '$' + total.toLocaleString('es-CO');
+        document.getElementById('total-box').style.display = 'block';
+    }
+
+    window.hacerPedido = async function() {
+        if(!productoSeleccionado) { alert('Por favor selecciona una pieza de pollo'); return; }
+        if(conBollo === null) { alert('Por favor indica si quieres bollo'); return; }
+        if(conSalsa === null) { alert('Por favor indica si quieres salsa'); return; }
+        if(!tipoConsumo) { alert('Por favor indica si es para comer aquí o para llevar'); return; }
+
+        var total = precioProducto + (conBollo ? 500 : 0);
+
+        const pedidoRef = push(ref(db, 'pedidos'));
+        pedidoActualId = pedidoRef.key;
+
+        await set(pedidoRef, {
+            usuarioId: usuarioActual.uid,
+            producto: productoSeleccionado,
+            bollo: conBollo ? 'Con bollo' : 'Sin bollo',
+            salsa: conSalsa ? 'Con salsa' : 'Sin salsa',
+            tipo: tipoConsumo === 'aqui' ? 'Para comer aquí' : 'Para llevar',
+            total: total,
+            estado: 'esperando',
+            fecha: new Date().toLocaleString('es-CO')
+        });
+
+        document.getElementById('seccion-pedido').style.display = 'none';
+        document.getElementById('estado-pedido').style.display = 'block';
+
+        onValue(ref(db, 'pedidos/' + pedidoActualId + '/estado'), (snap) => {
+            if(snap.val() === 'listo') {
+                document.getElementById('estado-badge').className = 'estado-badge estado-listo';
+                document.getElementById('estado-badge').textContent = '✅ ¡Tu pedido está listo!';
+            }
+        });
+    }
+
+    window.nuevoPedido = function() {
+        productoSeleccionado = null; precioProducto = 0; conBollo = null; conSalsa = null; tipoConsumo = null;
+        document.querySelectorAll('.producto, .opcion').forEach(el => el.classList.remove('selected'));
+        document.getElementById('total-box').style.display = 'none';
+        document.getElementById('seccion-pedido').style.display = 'block';
+        document.getElementById('estado-pedido').style.display = 'none';
+    }
+
+    window.cerrarSesion = function() {
+        signOut(auth).then(() => { window.location.href = 'index.html'; });
+    }
+</script>
+</body>
+</html>

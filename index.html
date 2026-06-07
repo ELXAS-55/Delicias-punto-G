@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delicias punto G</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:Arial;background:linear-gradient(135deg,#ff6b00,#ff9500);min-height:100vh;display:flex;align-items:center;justify-content:center;}
+        .container{background:white;border-radius:20px;padding:30px;width:90%;max-width:400px;box-shadow:0 10px 30px rgba(0,0,0,0.2);}
+        .logo{text-align:center;margin-bottom:20px;}
+        .logo h1{color:#ff6b00;font-size:28px;}
+        .logo p{color:#888;font-size:14px;}
+        .tabs{display:flex;margin-bottom:20px;border-radius:10px;overflow:hidden;border:1px solid #ff6b00;}
+        .tab{flex:1;padding:10px;text-align:center;cursor:pointer;font-size:14px;font-weight:500;color:#ff6b00;background:white;}
+        .tab.active{background:#ff6b00;color:white;}
+        .form-group{margin-bottom:14px;}
+        .form-group label{font-size:12px;font-weight:500;color:#666;display:block;margin-bottom:4px;}
+        .form-group input{width:100%;border:1px solid #ddd;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;}
+        .form-group input:focus{border-color:#ff6b00;}
+        .btn{width:100%;background:#ff6b00;color:white;border:none;border-radius:30px;padding:13px;font-size:15px;font-weight:500;cursor:pointer;margin-top:4px;}
+        .btn:hover{background:#e55f00;}
+        .error{color:red;font-size:12px;text-align:center;margin-top:8px;}
+        .success{color:green;font-size:12px;text-align:center;margin-top:8px;}
+        .dueno-link{text-align:center;margin-top:16px;}
+        .dueno-link a{color:#ff6b00;font-size:13px;text-decoration:none;}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">
+        <h1>🍗 Delicias punto G</h1>
+        <p>El mejor pollo de la región</p>
+    </div>
+    <div class="tabs">
+        <div class="tab active" id="tab-login" onclick="mostrarTab('login')">Iniciar sesión</div>
+        <div class="tab" id="tab-registro" onclick="mostrarTab('registro')">Registrarse</div>
+    </div>
+
+    <!-- Login -->
+    <div id="form-login">
+        <div class="form-group">
+            <label>📧 Correo electrónico</label>
+            <input type="email" id="login-email" placeholder="tucorreo@gmail.com">
+        </div>
+        <div class="form-group">
+            <label>🔒 Contraseña</label>
+            <input type="password" id="login-password" placeholder="Tu contraseña">
+        </div>
+        <button class="btn" onclick="iniciarSesion()">Entrar</button>
+        <p class="error" id="login-error"></p>
+    </div>
+
+    <!-- Registro -->
+    <div id="form-registro" style="display:none;">
+        <div class="form-group">
+            <label>👤 Nombre completo</label>
+            <input type="text" id="reg-nombre" placeholder="Tu nombre">
+        </div>
+        <div class="form-group">
+            <label>📧 Correo electrónico</label>
+            <input type="email" id="reg-email" placeholder="tucorreo@gmail.com">
+        </div>
+        <div class="form-group">
+            <label>📱 Número de WhatsApp</label>
+            <input type="tel" id="reg-telefono" placeholder="300 123 4567">
+        </div>
+        <div class="form-group">
+            <label>🔒 Contraseña</label>
+            <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres">
+        </div>
+        <button class="btn" onclick="registrarse()">Crear cuenta</button>
+        <p class="error" id="reg-error"></p>
+        <p class="success" id="reg-success"></p>
+    </div>
+
+    <div class="dueno-link">
+        <a href="dueno.html">🔐 Acceso dueño</a>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDw1-z0-gRK2VD5vBzRF9t1Rm1Nav2GcSw",
+        authDomain: "delicias-punto-g.firebaseapp.com",
+        databaseURL: "https://delicias-punto-g-default-rtdb.firebaseio.com",
+        projectId: "delicias-punto-g",
+        storageBucket: "delicias-punto-g.appspot.com",
+        messagingSenderId: "TU_SENDER_ID",
+        appId: "TU_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    window.mostrarTab = function(tab) {
+        document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
+        document.getElementById('form-registro').style.display = tab === 'registro' ? 'block' : 'none';
+        document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+        document.getElementById('tab-registro').classList.toggle('active', tab === 'registro');
+    }
+
+    window.iniciarSesion = async function() {
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        if(!email || !password) { document.getElementById('login-error').textContent = 'Por favor completa todos los campos'; return; }
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            window.location.href = 'cliente.html';
+        } catch(e) {
+            document.getElementById('login-error').textContent = 'Correo o contraseña incorrectos';
+        }
+    }
+
+    window.registrarse = async function() {
+        const nombre = document.getElementById('reg-nombre').value;
+        const email = document.getElementById('reg-email').value;
+        const telefono = document.getElementById('reg-telefono').value;
+        const password = document.getElementById('reg-password').value;
+        if(!nombre || !email || !telefono || !password) { document.getElementById('reg-error').textContent = 'Por favor completa todos los campos'; return; }
+        if(password.length < 6) { document.getElementById('reg-error').textContent = 'La contraseña debe tener mínimo 6 caracteres'; return; }
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await set(ref(db, 'usuarios/' + userCredential.user.uid), {
+                nombre: nombre,
+                email: email,
+                telefono: telefono
+            });
+            document.getElementById('reg-success').textContent = '¡Cuenta creada! Ya puedes iniciar sesión';
+            document.getElementById('reg-error').textContent = '';
+            setTimeout(() => mostrarTab('login'), 2000);
+        } catch(e) {
+            document.getElementById('reg-error').textContent = 'Error: ' + e.message;
+        }
+    }
+</script>
+</body>
+</html>
