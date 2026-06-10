@@ -2,6 +2,11 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <link rel="manifest" href="/Delicias-punto-G/manifest.json">
+    <meta name="theme-color" content="#ff6b00">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Delicias punto G">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delicias punto G</title>
     <style>
@@ -37,7 +42,6 @@
         <div class="tab" id="tab-registro" onclick="mostrarTab('registro')">Registrarse</div>
     </div>
 
-    <!-- Login -->
     <div id="form-login">
         <div class="form-group">
             <label>📧 Correo electrónico</label>
@@ -51,7 +55,6 @@
         <p class="error" id="login-error"></p>
     </div>
 
-    <!-- Registro -->
     <div id="form-registro" style="display:none;">
         <div class="form-group">
             <label>👤 Nombre completo</label>
@@ -89,9 +92,9 @@
         authDomain: "delicias-punto-g.firebaseapp.com",
         databaseURL: "https://delicias-punto-g-default-rtdb.firebaseio.com",
         projectId: "delicias-punto-g",
-        storageBucket: "delicias-punto-g.appspot.com",
-        messagingSenderId: "TU_SENDER_ID",
-        appId: "TU_APP_ID"
+        storageBucket: "delicias-punto-g.firebasestorage.app",
+        messagingSenderId: "152053203897",
+        appId: "1:152053203897:web:08d5e5049c67704ae2ac68"
     };
 
     const app = initializeApp(firebaseConfig);
