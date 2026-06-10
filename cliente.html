@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delicias punto G - Pedido</title>
+    <title>Delicias punto G</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff6b00">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
         body{font-family:Arial;background:#fff8f0;min-height:100vh;}
@@ -12,26 +16,31 @@
         header p{font-size:13px;opacity:0.9;}
         .content{padding:20px;max-width:500px;margin:0 auto;}
         .section-title{font-size:16px;font-weight:700;color:#ff6b00;margin:20px 0 10px;}
-        .producto{background:white;border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid transparent;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+        .producto{background:white;border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid transparent;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
         .producto.selected{border-color:#ff6b00;background:#fff5ee;}
         .producto-header{display:flex;justify-content:space-between;align-items:center;}
         .producto-nombre{font-size:15px;font-weight:500;color:#333;}
         .producto-precio{font-size:16px;font-weight:700;color:#ff6b00;}
-        .producto-desc{font-size:12px;color:#888;margin-top:4px;}
+        .qty-row{display:flex;align-items:center;gap:10px;margin-top:10px;}
+        .qty-btn{background:#ff6b00;color:white;border:none;border-radius:50%;width:28px;height:28px;font-size:18px;cursor:pointer;font-weight:700;}
+        .qty-num{font-size:16px;font-weight:700;color:#4a2c2a;min-width:24px;text-align:center;}
         .opciones{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
         .opcion{flex:1;min-width:80px;border:2px solid #ddd;border-radius:8px;padding:10px;text-align:center;cursor:pointer;font-size:13px;color:#666;}
         .opcion.selected{border-color:#ff6b00;background:#fff5ee;color:#ff6b00;font-weight:500;}
+        .pago-opt{border:2px solid #ddd;border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;font-size:14px;color:#333;}
+        .pago-opt.selected{border-color:#ff6b00;background:#fff5ee;}
+        .nequi-box{background:#fbeaf0;border:1px solid #f4c0d1;border-radius:8px;padding:14px;font-size:13px;display:none;margin-top:8px;}
         .btn-pedir{width:100%;background:#ff6b00;color:white;border:none;border-radius:30px;padding:15px;font-size:16px;font-weight:500;cursor:pointer;margin-top:20px;}
-        .total-box{background:white;border-radius:12px;padding:16px;margin-top:16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+        .total-box{background:white;border-radius:12px;padding:16px;margin-top:16px;box-shadow:0 2px 8px rgba(0,0,0,0.08);display:none;}
         .total-row{display:flex;justify-content:space-between;font-size:14px;color:#333;margin-bottom:6px;}
         .total-final{display:flex;justify-content:space-between;font-size:18px;font-weight:700;color:#ff6b00;border-top:1px solid #ddd;padding-top:10px;margin-top:6px;}
         .estado-pedido{background:white;border-radius:12px;padding:20px;text-align:center;margin-top:16px;display:none;}
-        .estado-pedido h3{color:#ff6b00;margin-bottom:8px;}
         .estado-badge{display:inline-block;padding:8px 20px;border-radius:20px;font-size:14px;font-weight:500;}
         .estado-esperando{background:#fff3cd;color:#856404;}
         .estado-listo{background:#d4edda;color:#155724;}
         .logout{text-align:center;margin-top:20px;}
         .logout a{color:#ff6b00;font-size:13px;cursor:pointer;}
+        .carrito-resumen{background:#fff5ee;border-radius:8px;padding:10px;margin-top:8px;font-size:13px;color:#4a2c2a;}
     </style>
 </head>
 <body>
@@ -42,38 +51,101 @@
 
 <div class="content">
     <div id="seccion-pedido">
-        <p class="section-title">🍗 Elige tu pieza</p>
-        <div class="producto" id="prod-pechuga-p" onclick="seleccionarProducto('Pechuga pequeña', 3500, 'pechuga-p')">
+        <p class="section-title">🍗 Elige tus piezas</p>
+
+        <div class="producto" id="prod-pechuga-p">
             <div class="producto-header"><span class="producto-nombre">🍗 Pechuga pequeña</span><span class="producto-precio">$3.500</span></div>
+            <div class="qty-row">
+                <button class="qty-btn" onclick="cambiarCantidad('pechuga-p', -1)">−</button>
+                <span class="qty-num" id="qty-pechuga-p">0</span>
+                <button class="qty-btn" onclick="cambiarCantidad('pechuga-p', 1)">+</button>
+                <span style="font-size:12px;color:#888;">unidades</span>
+            </div>
         </div>
-        <div class="producto" id="prod-pechuga-m" onclick="seleccionarProducto('Pechuga mediana', 4000, 'pechuga-m')">
+
+        <div class="producto" id="prod-pechuga-m">
             <div class="producto-header"><span class="producto-nombre">🍗 Pechuga mediana</span><span class="producto-precio">$4.000</span></div>
+            <div class="qty-row">
+                <button class="qty-btn" onclick="cambiarCantidad('pechuga-m', -1)">−</button>
+                <span class="qty-num" id="qty-pechuga-m">0</span>
+                <button class="qty-btn" onclick="cambiarCantidad('pechuga-m', 1)">+</button>
+                <span style="font-size:12px;color:#888;">unidades</span>
+            </div>
         </div>
-        <div class="producto" id="prod-pechuga-g" onclick="seleccionarProducto('Pechuga grande', 5000, 'pechuga-g')">
+
+        <div class="producto" id="prod-pechuga-g">
             <div class="producto-header"><span class="producto-nombre">🍗 Pechuga grande</span><span class="producto-precio">$5.000</span></div>
+            <div class="qty-row">
+                <button class="qty-btn" onclick="cambiarCantidad('pechuga-g', -1)">−</button>
+                <span class="qty-num" id="qty-pechuga-g">0</span>
+                <button class="qty-btn" onclick="cambiarCantidad('pechuga-g', 1)">+</button>
+                <span style="font-size:12px;color:#888;">unidades</span>
+            </div>
         </div>
-        <div class="producto" id="prod-muslo-p" onclick="seleccionarProducto('Muslo pequeño', 3500, 'muslo-p')">
+
+        <div class="producto" id="prod-muslo-p">
             <div class="producto-header"><span class="producto-nombre">🍗 Muslo pequeño</span><span class="producto-precio">$3.500</span></div>
+            <div class="qty-row">
+                <button class="qty-btn" onclick="cambiarCantidad('muslo-p', -1)">−</button>
+                <span class="qty-num" id="qty-muslo-p">0</span>
+                <button class="qty-btn" onclick="cambiarCantidad('muslo-p', 1)">+</button>
+                <span style="font-size:12px;color:#888;">unidades</span>
+            </div>
         </div>
-        <div class="producto" id="prod-muslo-m" onclick="seleccionarProducto('Muslo mediano', 4000, 'muslo-m')">
+
+        <div class="producto" id="prod-muslo-m">
             <div class="producto-header"><span class="producto-nombre">🍗 Muslo mediano</span><span class="producto-precio">$4.000</span></div>
+            <div class="qty-row">
+                <button class="qty-btn" onclick="cambiarCantidad('muslo-m', -1)">−</button>
+                <span class="qty-num" id="qty-muslo-m">0</span>
+                <button class="qty-btn" onclick="cambiarCantidad('muslo-m', 1)">+</button>
+                <span style="font-size:12px;color:#888;">unidades</span>
+            </div>
         </div>
-        <div class="producto" id="prod-muslo-g" onclick="seleccionarProducto('Muslo grande', 5000, 'muslo-g')">
+
+        <div class="producto" id="prod-muslo-g">
             <div class="producto-header"><span class="producto-nombre">🍗 Muslo grande</span><span class="producto-precio">$5.000</span></div>
+            <div class="qty-row">
+                <button class="qty-btn" onclick="cambiarCantidad('muslo-g', -1)">−</button>
+                <span class="qty-num" id="qty-muslo-g">0</span>
+                <button class="qty-btn" onclick="cambiarCantidad('muslo-g', 1)">+</button>
+                <span style="font-size:12px;color:#888;">unidades</span>
+            </div>
         </div>
-        <div class="producto" id="prod-contra-p" onclick="seleccionarProducto('Contra muslo pequeño', 3500, 'contra-p')">
+
+        <div class="producto" id="prod-contra-p">
             <div class="producto-header"><span class="producto-nombre">🍗 Contra muslo pequeño</span><span class="producto-precio">$3.500</span></div>
+            <div class="qty-row">
+                <button class="qty-btn" onclick="cambiarCantidad('contra-p', -1)">−</button>
+                <span class="qty-num" id="qty-contra-p">0</span>
+                <button class="qty-btn" onclick="cambiarCantidad('contra-p', 1)">+</button>
+                <span style="font-size:12px;color:#888;">unidades</span>
+            </div>
         </div>
-        <div class="producto" id="prod-contra-m" onclick="seleccionarProducto('Contra muslo mediano', 4000, 'contra-m')">
+
+        <div class="producto" id="prod-contra-m">
             <div class="producto-header"><span class="producto-nombre">🍗 Contra muslo mediano</span><span class="producto-precio">$4.000</span></div>
+            <div class="qty-row">
+                <button class="qty-btn" onclick="cambiarCantidad('contra-m', -1)">−</button>
+                <span class="qty-num" id="qty-contra-m">0</span>
+                <button class="qty-btn" onclick="cambiarCantidad('contra-m', 1)">+</button>
+                <span style="font-size:12px;color:#888;">unidades</span>
+            </div>
         </div>
-        <div class="producto" id="prod-contra-g" onclick="seleccionarProducto('Contra muslo grande', 5000, 'contra-g')">
+
+        <div class="producto" id="prod-contra-g">
             <div class="producto-header"><span class="producto-nombre">🍗 Contra muslo grande</span><span class="producto-precio">$5.000</span></div>
+            <div class="qty-row">
+                <button class="qty-btn" onclick="cambiarCantidad('contra-g', -1)">−</button>
+                <span class="qty-num" id="qty-contra-g">0</span>
+                <button class="qty-btn" onclick="cambiarCantidad('contra-g', 1)">+</button>
+                <span style="font-size:12px;color:#888;">unidades</span>
+            </div>
         </div>
 
         <p class="section-title">🌽 ¿Con bollo?</p>
         <div class="opciones">
-            <div class="opcion" id="bollo-si" onclick="seleccionarBollo(true)">✅ Con bollo<br><small>+$500</small></div>
+            <div class="opcion" id="bollo-si" onclick="seleccionarBollo(true)">✅ Con bollo<br><small>+$500 c/u</small></div>
             <div class="opcion" id="bollo-no" onclick="seleccionarBollo(false)">❌ Sin bollo</div>
         </div>
 
@@ -89,10 +161,20 @@
             <div class="opcion" id="tipo-llevar" onclick="seleccionarTipo('llevar')">🥡 Para llevar</div>
         </div>
 
-        <div class="total-box" id="total-box" style="display:none;">
-            <div class="total-row"><span id="total-producto-txt"></span><span id="total-producto-val"></span></div>
-            <div class="total-row" id="total-bollo-row" style="display:none;"><span>Bollo</span><span>+$500</span></div>
-            <div class="total-final"><span>Total</span><span id="total-final-val"></span></div>
+        <p class="section-title">💳 Método de pago</p>
+        <div class="pago-opt" id="pago-efectivo" onclick="seleccionarPago('efectivo')">💵 Efectivo — Pagas al recibir</div>
+        <div class="pago-opt" id="pago-nequi" onclick="seleccionarPago('nequi')">📱 Nequi</div>
+        <div class="nequi-box" id="nequi-box">
+            <p style="font-size:11px;color:#993556;font-weight:500;margin-bottom:6px;">DATOS NEQUI</p>
+            <p><strong>Número:</strong> 3016090056</p>
+            <p><strong>Titular:</strong> Luisa Fernanda</p>
+            <p style="margin-top:8px;font-size:12px;color:#d4537e;font-weight:500;">Toma captura del comprobante y muéstrala al recoger</p>
+        </div>
+
+        <div class="total-box" id="total-box">
+            <p style="font-size:11px;color:#ff6b00;font-weight:700;margin-bottom:8px;">🛒 TU PEDIDO</p>
+            <div id="resumen-items"></div>
+            <div class="total-final"><span>Total</span><span id="total-final-val">$0</span></div>
         </div>
 
         <button class="btn-pedir" onclick="hacerPedido()">🍗 Hacer pedido</button>
@@ -101,14 +183,12 @@
     <div class="estado-pedido" id="estado-pedido">
         <h3>¡Pedido recibido! 🎉</h3>
         <p style="color:#666;font-size:14px;margin-bottom:12px;">Tu pedido está siendo preparado</p>
-        <span class="estado-badge estado-esperando" id="estado-badge">⏳ Preparando tu pedido...</span>
-        <p style="color:#888;font-size:12px;margin-top:12px;">Te avisaremos por WhatsApp cuando esté listo</p>
+        <span class="estado-badge estado-esperando" id="estado-badge">⏳ Preparando tu pollo...</span>
+        <p style="color:#888;font-size:12px;margin-top:12px;">Esta pantalla se actualizará cuando esté listo</p>
         <button style="margin-top:16px;background:#ff6b00;color:white;border:none;border-radius:20px;padding:10px 20px;cursor:pointer;" onclick="nuevoPedido()">Hacer otro pedido</button>
     </div>
 
-    <div class="logout">
-        <a onclick="cerrarSesion()">Cerrar sesión</a>
-    </div>
+    <div class="logout"><a onclick="cerrarSesion()">Cerrar sesión</a></div>
 </div>
 
 <script type="module">
@@ -121,22 +201,36 @@
         authDomain: "delicias-punto-g.firebaseapp.com",
         databaseURL: "https://delicias-punto-g-default-rtdb.firebaseio.com",
         projectId: "delicias-punto-g",
-        storageBucket: "delicias-punto-g.appspot.com",
-        messagingSenderId: "TU_SENDER_ID",
-        appId: "TU_APP_ID"
+        storageBucket: "delicias-punto-g.firebasestorage.app",
+        messagingSenderId: "152053203897",
+        appId: "1:152053203897:web:08d5e5049c67704ae2ac68"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    var productoSeleccionado = null;
-    var precioProducto = 0;
+    const productos = {
+        'pechuga-p': {nombre:'Pechuga pequeña', precio:3500},
+        'pechuga-m': {nombre:'Pechuga mediana', precio:4000},
+        'pechuga-g': {nombre:'Pechuga grande', precio:5000},
+        'muslo-p': {nombre:'Muslo pequeño', precio:3500},
+        'muslo-m': {nombre:'Muslo mediano', precio:4000},
+        'muslo-g': {nombre:'Muslo grande', precio:5000},
+        'contra-p': {nombre:'Contra muslo pequeño', precio:3500},
+        'contra-m': {nombre:'Contra muslo mediano', precio:4000},
+        'contra-g': {nombre:'Contra muslo grande', precio:5000}
+    };
+
+    var cantidades = {};
     var conBollo = null;
     var conSalsa = null;
     var tipoConsumo = null;
+    var metodoPago = null;
     var usuarioActual = null;
     var pedidoActualId = null;
+
+    Object.keys(productos).forEach(k => cantidades[k] = 0);
 
     onAuthStateChanged(auth, (user) => {
         if(!user) { window.location.href = 'index.html'; return; }
@@ -147,11 +241,14 @@
         });
     });
 
-    window.seleccionarProducto = function(nombre, precio, id) {
-        document.querySelectorAll('.producto').forEach(p => p.classList.remove('selected'));
-        document.getElementById('prod-' + id).classList.add('selected');
-        productoSeleccionado = nombre;
-        precioProducto = precio;
+    window.cambiarCantidad = function(id, delta) {
+        cantidades[id] = Math.max(0, (cantidades[id] || 0) + delta);
+        document.getElementById('qty-' + id).textContent = cantidades[id];
+        if(cantidades[id] > 0) {
+            document.getElementById('prod-' + id).classList.add('selected');
+        } else {
+            document.getElementById('prod-' + id).classList.remove('selected');
+        }
         actualizarTotal();
     }
 
@@ -174,34 +271,60 @@
         document.getElementById('tipo-llevar').classList.toggle('selected', tipo === 'llevar');
     }
 
+    window.seleccionarPago = function(pago) {
+        metodoPago = pago;
+        document.getElementById('pago-efectivo').classList.toggle('selected', pago === 'efectivo');
+        document.getElementById('pago-nequi').classList.toggle('selected', pago === 'nequi');
+        document.getElementById('nequi-box').style.display = pago === 'nequi' ? 'block' : 'none';
+    }
+
     function actualizarTotal() {
-        if(!productoSeleccionado) return;
-        var total = precioProducto + (conBollo ? 500 : 0);
-        document.getElementById('total-producto-txt').textContent = productoSeleccionado;
-        document.getElementById('total-producto-val').textContent = '$' + precioProducto.toLocaleString('es-CO');
-        document.getElementById('total-bollo-row').style.display = conBollo ? 'flex' : 'none';
-        document.getElementById('total-final-val').textContent = '$' + total.toLocaleString('es-CO');
-        document.getElementById('total-box').style.display = 'block';
+        var totalVal = 0;
+        var html = '';
+        Object.keys(productos).forEach(k => {
+            if(cantidades[k] > 0) {
+                var subtotal = cantidades[k] * productos[k].precio;
+                if(conBollo) subtotal += cantidades[k] * 500;
+                totalVal += subtotal;
+                html += '<div class="total-row"><span>' + cantidades[k] + 'x ' + productos[k].nombre + (conBollo ? ' + bollo':'') + '</span><span>$' + subtotal.toLocaleString('es-CO') + '</span></div>';
+            }
+        });
+        document.getElementById('resumen-items').innerHTML = html;
+        document.getElementById('total-final-val').textContent = '$' + totalVal.toLocaleString('es-CO');
+        var hayProductos = Object.values(cantidades).some(c => c > 0);
+        document.getElementById('total-box').style.display = hayProductos ? 'block' : 'none';
     }
 
     window.hacerPedido = async function() {
-        if(!productoSeleccionado) { alert('Por favor selecciona una pieza de pollo'); return; }
+        var hayProductos = Object.values(cantidades).some(c => c > 0);
+        if(!hayProductos) { alert('Por favor selecciona al menos una pieza de pollo'); return; }
         if(conBollo === null) { alert('Por favor indica si quieres bollo'); return; }
         if(conSalsa === null) { alert('Por favor indica si quieres salsa'); return; }
         if(!tipoConsumo) { alert('Por favor indica si es para comer aquí o para llevar'); return; }
+        if(!metodoPago) { alert('Por favor selecciona el método de pago'); return; }
 
-        var total = precioProducto + (conBollo ? 500 : 0);
+        var productosTxt = '';
+        var totalVal = 0;
+        Object.keys(productos).forEach(k => {
+            if(cantidades[k] > 0) {
+                var subtotal = cantidades[k] * productos[k].precio;
+                if(conBollo) subtotal += cantidades[k] * 500;
+                totalVal += subtotal;
+                productosTxt += cantidades[k] + 'x ' + productos[k].nombre + ', ';
+            }
+        });
 
         const pedidoRef = push(ref(db, 'pedidos'));
         pedidoActualId = pedidoRef.key;
 
         await set(pedidoRef, {
             usuarioId: usuarioActual.uid,
-            producto: productoSeleccionado,
-            bollo: conBollo ? 'Con bollo' : 'Sin bollo',
+            productos: productosTxt.slice(0,-2),
+            bollo: conBollo ? 'Con bollo (+$500 c/u)' : 'Sin bollo',
             salsa: conSalsa ? 'Con salsa' : 'Sin salsa',
             tipo: tipoConsumo === 'aqui' ? 'Para comer aquí' : 'Para llevar',
-            total: total,
+            pago: metodoPago === 'efectivo' ? 'Efectivo' : 'Nequi',
+            total: totalVal,
             estado: 'esperando',
             fecha: new Date().toLocaleString('es-CO')
         });
@@ -212,14 +335,16 @@
         onValue(ref(db, 'pedidos/' + pedidoActualId + '/estado'), (snap) => {
             if(snap.val() === 'listo') {
                 document.getElementById('estado-badge').className = 'estado-badge estado-listo';
-                document.getElementById('estado-badge').textContent = '✅ ¡Tu pedido está listo!';
+                document.getElementById('estado-badge').textContent = '✅ ¡Tu pollo está listo, pasa a recogerlo!';
             }
         });
     }
 
     window.nuevoPedido = function() {
-        productoSeleccionado = null; precioProducto = 0; conBollo = null; conSalsa = null; tipoConsumo = null;
-        document.querySelectorAll('.producto, .opcion').forEach(el => el.classList.remove('selected'));
+        Object.keys(cantidades).forEach(k => { cantidades[k] = 0; document.getElementById('qty-' + k).textContent = 0; document.getElementById('prod-' + k).classList.remove('selected'); });
+        conBollo = null; conSalsa = null; tipoConsumo = null; metodoPago = null;
+        document.querySelectorAll('.opcion, .pago-opt').forEach(el => el.classList.remove('selected'));
+        document.getElementById('nequi-box').style.display = 'none';
         document.getElementById('total-box').style.display = 'none';
         document.getElementById('seccion-pedido').style.display = 'block';
         document.getElementById('estado-pedido').style.display = 'none';

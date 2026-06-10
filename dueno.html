@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delicias punto G - Dueño</title>
+    <title>Delicias punto G - Panel Dueño</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff6b00">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
         body{font-family:Arial;background:#fff8f0;min-height:100vh;}
@@ -17,23 +19,21 @@
         .btn{width:100%;background:#ff6b00;color:white;border:none;border-radius:30px;padding:13px;font-size:15px;font-weight:500;cursor:pointer;}
         .content{padding:20px;max-width:600px;margin:0 auto;display:none;}
         .pedido-card{background:white;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-left:4px solid #ff6b00;}
-        .pedido-card.listo{border-left-color:#28a745;}
+        .pedido-card.listo{border-left-color:#28a745;opacity:0.7;}
         .pedido-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
         .pedido-numero{font-size:13px;font-weight:700;color:#ff6b00;}
-        .pedido-fecha{font-size:11px;color:#888;}
         .pedido-detalle{font-size:13px;color:#333;margin-bottom:4px;}
         .pedido-total{font-size:16px;font-weight:700;color:#ff6b00;margin-top:8px;}
-        .btn-listo{background:#28a745;color:white;border:none;border-radius:20px;padding:8px 16px;font-size:13px;cursor:pointer;margin-top:8px;}
-        .btn-listo:disabled{background:#aaa;cursor:not-allowed;}
+        .btn-listo{background:#28a745;color:white;border:none;border-radius:20px;padding:10px 20px;font-size:14px;cursor:pointer;margin-top:10px;width:100%;}
         .badge-esperando{background:#fff3cd;color:#856404;padding:4px 10px;border-radius:20px;font-size:11px;}
         .badge-listo{background:#d4edda;color:#155724;padding:4px 10px;border-radius:20px;font-size:11px;}
         .no-pedidos{text-align:center;color:#888;padding:40px;font-size:14px;}
-        .logout{text-align:center;margin-top:20px;}
-        .logout a{color:#ff6b00;font-size:13px;cursor:pointer;}
         .stats{display:flex;gap:12px;margin-bottom:20px;}
         .stat{flex:1;background:white;border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
         .stat-num{font-size:28px;font-weight:700;color:#ff6b00;}
         .stat-label{font-size:11px;color:#888;}
+        .logout{text-align:center;margin-top:20px;}
+        .logout a{color:#ff6b00;font-size:13px;cursor:pointer;}
     </style>
 </head>
 <body>
@@ -57,10 +57,10 @@
 
 <div class="content" id="panel-dueno">
     <div class="stats">
-        <div class="stat"><div class="stat-num" id="stat-esperando">0</div><div class="stat-label">Esperando</div></div>
-        <div class="stat"><div class="stat-num" id="stat-listos">0</div><div class="stat-label">Listos hoy</div></div>
+        <div class="stat"><div class="stat-num" id="stat-esperando">0</div><div class="stat-label">⏳ Esperando</div></div>
+        <div class="stat"><div class="stat-num" id="stat-listos">0</div><div class="stat-label">✅ Listos</div></div>
     </div>
-    <h3 style="color:#ff6b00;margin-bottom:12px;">📋 Pedidos activos</h3>
+    <h3 style="color:#ff6b00;margin-bottom:12px;">📋 Pedidos</h3>
     <div id="lista-pedidos"></div>
     <div class="logout"><a onclick="cerrarSesionDueno()">Cerrar sesión</a></div>
 </div>
@@ -75,9 +75,9 @@
         authDomain: "delicias-punto-g.firebaseapp.com",
         databaseURL: "https://delicias-punto-g-default-rtdb.firebaseio.com",
         projectId: "delicias-punto-g",
-        storageBucket: "delicias-punto-g.appspot.com",
-        messagingSenderId: "TU_SENDER_ID",
-        appId: "TU_APP_ID"
+        storageBucket: "delicias-punto-g.firebasestorage.app",
+        messagingSenderId: "152053203897",
+        appId: "1:152053203897:web:08d5e5049c67704ae2ac68"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -113,17 +113,18 @@
                 if(p.estado === 'esperando') esperando++;
                 if(p.estado === 'listo') listos++;
                 html += `
-                <div class="pedido-card ${p.estado === 'listo' ? 'listo' : ''}" id="card-${id}">
+                <div class="pedido-card ${p.estado === 'listo' ? 'listo' : ''}">
                     <div class="pedido-header">
                         <span class="pedido-numero">Pedido #${id.slice(-4).toUpperCase()}</span>
                         <span class="${p.estado === 'listo' ? 'badge-listo' : 'badge-esperando'}">${p.estado === 'listo' ? '✅ Listo' : '⏳ Esperando'}</span>
                     </div>
-                    <div class="pedido-detalle">🍗 ${p.producto}</div>
+                    <div class="pedido-detalle">🍗 ${p.productos}</div>
                     <div class="pedido-detalle">🌽 ${p.bollo} | 🥫 ${p.salsa}</div>
                     <div class="pedido-detalle">${p.tipo === 'Para comer aquí' ? '🪑' : '🥡'} ${p.tipo}</div>
+                    <div class="pedido-detalle">💳 ${p.pago}</div>
                     <div class="pedido-detalle">🕐 ${p.fecha}</div>
-                    <div class="pedido-total">Total: $${p.total.toLocaleString('es-CO')}</div>
-                    ${p.estado === 'esperando' ? `<button class="btn-listo" onclick="marcarListo('${id}')">✅ Marcar como listo</button>` : ''}
+                    <div class="pedido-total">Total: $${Number(p.total).toLocaleString('es-CO')}</div>
+                    ${p.estado === 'esperando' ? `<button class="btn-listo" onclick="marcarListo('${id}')">✅ Marcar como listo</button>` : '<p style="color:#28a745;font-weight:500;margin-top:8px;">✅ Ya entregado</p>'}
                 </div>`;
             });
 
@@ -135,6 +136,7 @@
 
     window.marcarListo = async function(id) {
         await update(ref(db, 'pedidos/' + id), { estado: 'listo' });
+        alert('¡Pedido marcado como listo! El cliente verá la actualización.');
     }
 
     window.cerrarSesionDueno = function() {
