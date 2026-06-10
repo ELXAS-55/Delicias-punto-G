@@ -1,9 +1,25 @@
 {
     "name": "Delicias punto G",
     "short_name": "Delicias G",
-    "start_url": "index.html",
+    "description": "El mejor pollo de la región",
+    "start_url": "/Delicias-punto-G/index.html",
+    "scope": "/Delicias-punto-G/",
     "display": "standalone",
     "background_color": "#ff6b00",
     "theme_color": "#ff6b00",
-    "orientation": "portrait"
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "icon.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
 }
